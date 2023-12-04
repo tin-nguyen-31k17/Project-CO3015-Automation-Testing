@@ -3,14 +3,25 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 
 # Initialize the WebDriver
 driver = webdriver.Chrome()
 
+# Function to wait for an element to be clickable and then click
+def click_when_clickable(by, value, timeout=10):
+    try:
+        element = WebDriverWait(driver, timeout).until(
+            EC.element_to_be_clickable((by, value))
+        )
+        element.click()
+    except NoSuchElementException:
+        print(f"Element not found: {value}")
+
 # Level 0: Automation without using data-driven testing approach
 def test_login():
     driver.get("https://moodle.org/demo")
-    driver.find_element(By.LINK_TEXT, "Log in as a guest").click()
+    click_when_clickable(By.LINK_TEXT, "Log in")
 
 def test_course_registration():
     # Add steps for course registration
@@ -66,4 +77,3 @@ run_tests_with_inputs(test_data_file)
 
 # Close the WebDriver
 driver.quit()
-
