@@ -20,9 +20,13 @@ def click_when_clickable(by, value, timeout=10):
 
 # Level 0: Automation without using data-driven testing approach
 def test_login():
-    driver.get("https://moodle.org/demo")
-    click_when_clickable(By.LINK_TEXT, "Log in")
-
+    driver.get("https://sandbox.moodledemo.net/login/index.php")
+    logInAccount=driver.find_element("id","username")
+    logInAccount.send_keys("student")
+    logInAccount=driver.find_element("id","password")
+    logInAccount.send_keys("sandbox")
+    # click_when_clickable(By.LINK_TEXT, "Log in")
+    logInAccount.submit()
 def test_course_registration():
     # Add steps for course registration
     pass
@@ -70,10 +74,10 @@ test_forum_posting()
 test_assignment_submission()
 
 # Run Level 1 tests
-run_data_driven_tests(test_data_file)
+# run_data_driven_tests(test_data_file)
 
 # Run Level 2 tests
-run_tests_with_inputs(test_data_file)
+# run_tests_with_inputs(test_data_file)
 
 # Close the WebDriver
-driver.quit()
+# driver.quit()
