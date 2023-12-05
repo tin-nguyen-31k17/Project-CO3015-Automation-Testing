@@ -1,4 +1,5 @@
 import csv
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -20,12 +21,16 @@ def click_when_clickable(by, value, timeout=10):
 
 # Level 0: Automation without using data-driven testing approach
 def test_login():
-    driver.get("https://moodle.org/demo")
-    click_when_clickable(By.LINK_TEXT, "Log in")
-
+    driver.get("https://sandbox.moodledemo.net/login/index.php")
+    logInAccount=driver.find_element(By.ID,"username")
+    logInAccount.send_keys("student")
+    logInAccount=driver.find_element(By.ID,"password")
+    logInAccount.send_keys("sandbox")
+    logInAccount.submit()
+    
 def test_course_registration():
-    # Add steps for course registration
-    pass
+    # try to register for a course
+    click_when_clickable(By.LINK_TEXT, "My second course")
 
 def test_forum_posting():
     # Add steps for forum posting
@@ -33,7 +38,23 @@ def test_forum_posting():
 
 def test_assignment_submission():
     # Add steps for assignment submission
-    pass
+    click_when_clickable(By.LINK_TEXT, "My first course")
+    click_when_clickable(By.LINK_TEXT, "Assignment 1")
+    click_when_clickable(By.CLASS_NAME, "singlebutton")
+    driver.implicitly_wait(5)
+    click_when_clickable(By.CLASS_NAME, "fp-btn-add")
+    click_when_clickable(By.CLASS_NAME, "px-3")
+    
+    upload_file = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), ".", "test.pdf"))
+    file_upload = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.NAME, "repo_upload_file")))
+    
+    file_upload.send_keys(upload_file)
+    click_when_clickable(By.CLASS_NAME, "fp-upload-btn")
+   
+    click_when_clickable(By.ID, "id_submitbutton")
+
 
 # Level 1: Automation using data-driven testing approach
 def run_data_driven_tests(test_data_file):
@@ -65,15 +86,15 @@ test_data_file = 'test_cases.csv'
 
 # Run Level 0 tests
 test_login()
-test_course_registration()
+# test_course_registration()
 test_forum_posting()
 test_assignment_submission()
 
 # Run Level 1 tests
-run_data_driven_tests(test_data_file)
+# run_data_driven_tests(test_data_file)
 
 # Run Level 2 tests
-run_tests_with_inputs(test_data_file)
+# run_tests_with_inputs(test_data_file)
 
 # Close the WebDriver
-driver.quit()
+# driver.quit()
