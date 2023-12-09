@@ -34,7 +34,16 @@ def test_course_registration():
 
 def test_forum_posting():
     # Add steps for forum posting
-    pass
+    driver.get("https://sandbox.moodledemo.net/")
+    click_when_clickable(By.LINK_TEXT, "My first course")
+    click_when_clickable(By.LINK_TEXT, "News Forum")
+    click_when_clickable(By.ID, "yui_3_18_1_1_1702097450106_51")
+    postForum=driver.find_element(By.ID,"id_subject")
+    postForum.send_keys("Forum test")
+     postForum=driver.find_element(By.ID,"tinymce")
+    postForum.send_keys("test forum")
+       click_when_clickable(By.ID, "id_submitbutton")
+    
 
 def test_assignment_submission():
     # Add steps for assignment submission
