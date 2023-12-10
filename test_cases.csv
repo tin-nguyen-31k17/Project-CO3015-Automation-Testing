@@ -1,0 +1,5 @@
+Test,URL,Input
+Login,https://sandbox.moodledemo.net/login/index.php,student
+Course Registration,https://sandbox.moodledemo.net/course/view.php?id=2,
+Forum Posting,https://sandbox.moodledemo.net/mod/forum/view.php?id=1,Forum test
+Search Documentation,https://sandbox.moodledemo.net/mod/resource/view.php?id=3,Assignment 1
