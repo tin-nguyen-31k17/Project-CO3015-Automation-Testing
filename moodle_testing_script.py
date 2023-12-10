@@ -35,25 +35,81 @@ def write_report(test_name, result, filename='test_report.csv'):
 def test_login():
     driver.get("https://sandbox.moodledemo.net/login/index.php")
     logInAccount=driver.find_element(By.ID,"username")
-    logInAccount.send_keys("student")
+    logInAccount.send_keys("teacher")
     logInAccount=driver.find_element(By.ID,"password")
     logInAccount.send_keys("sandbox")
     logInAccount.submit()
 
+# Function to test searching for a post
+def test_search_post(post_name):
+    try:
+        # Navigate to the forum page
+        driver.get("https://sandbox.moodledemo.net/mod/forum/view.php?id=1")
+        time.sleep(5)  # Wait for the page to load
+
+        # Enter the post name in the search field
+        search_field = driver.find_element(By.NAME, "q")
+        search_field.send_keys(post_name)
+
+        # Click on the "Search forums" button
+        if not click_when_clickable(By.CLASS_NAME, "btn-primary"):
+            write_report('test_search_post', 'Fail')
+            return
+
+        # If everything passed, write a pass result to the report
+        write_report('test_search_post', 'Pass')
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        write_report('test_search_post', 'Fail')
+
+# Function to test searching for documentation
+def test_search_documentation(doc_name):
+    try:
+        # Navigate to the documentation page
+        driver.get("https://sandbox.moodledemo.net/my/courses.php")
+        time.sleep(5)  # Wait for the page to load
+
+        # Enter the documentation name in the search field
+        search_field = driver.find_element(By.NAME, "q")
+        search_field.send_keys(doc_name)
+
+        # Click on the "Search" button
+        if not click_when_clickable(By.CLASS_NAME, "btn-primary"):
+            write_report('test_search_documentation', 'Fail')
+            return
+
+        # If everything passed, write a pass result to the report
+        write_report('test_search_documentation', 'Pass')
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        write_report('test_search_documentation', 'Fail')
+
 def test_course_registration():
-    # try to register for a course
+    # Add steps for course registration
     click_when_clickable(By.LINK_TEXT, "My second course")
+    click_when_clickable(By.LINK_TEXT, "Enrol me")
+
 
 def test_forum_posting():
     try:
         # Navigate to the course page
-        driver.get("https://sandbox.moodledemo.net/course/view.php?id=2")
+        driver.get("https://sandbox.moodledemo.net/mod/forum/view.php?id=1")
         time.sleep(5)  # Wait for the page to load
 
-        # Click on the "News forum" link
-        if not click_when_clickable(By.LINK_TEXT, "News forum"):
+        # Click on the "Add discussion topic" link
+        if not click_when_clickable(By.LINK_TEXT, "Add discussion topic"):
             write_report('test_forum_posting', 'Fail')
             return
+        
+        # Enter the subject
+        subject_field = driver.find_element(By.ID, "id_subject")
+        subject_field.send_keys("Test topic")
+
+        # Enter the message
+        driver.switch_to.frame(driver.find_element(By.TAG_NAME, "iframe"))  # Switch to the text editor frame
+        message_field = driver.find_element(By.ID, "tinymce")
+        message_field.send_keys("Test forum")
+        driver.switch_to.default_content()  # Switch back to the main content
 
         # Click on the "Add a new topic" button
         if not click_when_clickable(By.LINK_TEXT, "Test topic"):
@@ -126,9 +182,11 @@ def run_tests_with_inputs(test_data_file):
                 driver.get(row['URL'])
                 if row['Test'] == 'Search Post':
                     # Add steps for searching a post
+                    test_search_post(row['Input'])
                     pass
                 elif row['Test'] == 'Search Documentation':
                     # Add steps for searching documentation
+                    test_search_documentation(row['Input'])
                     pass
                 # Add other tests as needed
                 write_report(row['Test'], 'Pass')
@@ -142,6 +200,8 @@ test_data_file = 'test_cases.csv'
 # Run Level 0 tests
 try:
     test_login()
+    test_search_post('Test')
+    test_search_documentation('Test')
     test_forum_posting()
     test_assignment_submission()
 except Exception as e:
@@ -152,11 +212,11 @@ finally:
     write_report('test_forum_posting', 'Pass')
     write_report('test_assignment_submission', 'Pass')
 
-# Close the driver
-driver.quit()
-
 # Run Level 1 tests
 run_data_driven_tests(test_data_file)
 
 # Run Level 2 tests
 run_tests_with_inputs(test_data_file)
+
+# Close the driver
+driver.quit()
