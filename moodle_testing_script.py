@@ -1,5 +1,6 @@
 import csv
 import os
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -44,16 +45,41 @@ def test_course_registration():
     click_when_clickable(By.LINK_TEXT, "My second course")
 
 def test_forum_posting():
-    # Add steps for forum posting
-    driver.get("https://sandbox.moodledemo.net/")
-    click_when_clickable(By.LINK_TEXT, "My first course")
-    click_when_clickable(By.LINK_TEXT, "News Forum")
-    click_when_clickable(By.ID, "yui_3_18_1_1_1702097450106_51")
-    postForum=driver.find_element(By.ID,"id_subject")
-    postForum.send_keys("Forum test")
-    postForum=driver.find_element(By.ID,"tinymce")
-    postForum.send_keys("test forum")
-    click_when_clickable(By.ID, "id_submitbutton")
+    try:
+        # Navigate to the course page
+        driver.get("https://sandbox.moodledemo.net/course/view.php?id=2")
+        time.sleep(5)  # Wait for the page to load
+
+        # Click on the "News forum" link
+        if not click_when_clickable(By.LINK_TEXT, "News forum"):
+            write_report('test_forum_posting', 'Fail')
+            return
+
+        # Click on the "Add a new topic" button
+        if not click_when_clickable(By.LINK_TEXT, "Add a new topic"):
+            write_report('test_forum_posting', 'Fail')
+            return
+
+        # Enter the subject
+        subject_field = driver.find_element(By.ID, "id_subject")
+        subject_field.send_keys("Forum test")
+
+        # Enter the message
+        driver.switch_to.frame(driver.find_element(By.TAG_NAME, "iframe"))  # Switch to the text editor frame
+        message_field = driver.find_element(By.ID, "tinymce")
+        message_field.send_keys("Test forum")
+        driver.switch_to.default_content()  # Switch back to the main content
+
+        # Click on the "Post to forum" button
+        if not click_when_clickable(By.ID, "id_submitbutton"):
+            write_report('test_forum_posting', 'Fail')
+            return
+
+        # If everything passed, write a pass result to the report
+        write_report('test_forum_posting', 'Pass')
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        write_report('test_forum_posting', 'Fail')
 
 def test_assignment_submission():
     # Add steps for assignment submission
